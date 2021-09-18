@@ -11,6 +11,18 @@ services:
      - /var/run/docker.sock:/var/run/docker.sock
      - portainer_data:/data
 
+  discountdb:
+    container_name: discountdb
+    environment: 
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=DiscountDb
+    restart: always
+    ports:
+      - "5433:5433"
+    volumes:
+      - postgres_data:/var/lib/postgressql/data
+
   basketdb:
     container_name: basketdb
     restart: always
