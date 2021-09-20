@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["Services/Discount/Discount.API/Discount.API.csproj", "Services/Discount/Discount.API/"]
 RUN dotnet restore "Services/Discount/Discount.API/Discount.API.csproj"
 COPY . .
-WORKDIR "/src/Discount.API"
+WORKDIR "/src/Services/Discount/Discount.API"
 RUN dotnet build "Discount.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
