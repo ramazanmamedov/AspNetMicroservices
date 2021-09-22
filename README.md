@@ -11,3 +11,6 @@ https://github.com/jbogard/MediatR/wiki
 package: https://github.com/AutoMapper/AutoMapper  
 documentation: https://docs.automapper.org/en/latest/  
 
+4. Clean Architecture Solution Template for Angular 12 and .NET 5 by Jason Taylor (SSW Solution Architect)  
+https://github.com/jasontaylordev/CleanArchitecture
+
