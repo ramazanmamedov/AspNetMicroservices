@@ -1,5 +1,13 @@
 # AspNetMicroservices
 
+**Installing**
+1. Clone the repository
+2. At the root directory which include docker-compose.yml files, run below command:  
+``
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+``
+
+
 **Useful links:**
 1. ValueObject implementation   
 https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/microservice-ddd-cqrs-patterns/implement-value-objects  
