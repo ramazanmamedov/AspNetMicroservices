@@ -52,6 +52,7 @@ namespace Ordering.API
             
             // General Configuration
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<BasketCheckoutConsumer>();   
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
