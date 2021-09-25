@@ -3,6 +3,9 @@ version: '3.4'
 services:
   portainer:
     image: portainer/portainer-ce
+  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
 
   catalogdb: 
     image: mongo
