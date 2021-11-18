@@ -18,8 +18,8 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  discountdb:
-    container_name: discountdb
+  postgresDb:
+    container_name: postgresDb
     environment: 
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin1234
@@ -43,15 +43,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-  
-  orderdb:
-    container_name: orderdb
-    environment: 
-      SA_PASSWORD: "2163osonivr7474rR"
-      ACCEPT_EULA: "Y"
-    restart: always
-    ports:
-      - "1433:1433"
 
   catalog.api:
     container_name: catalog.api
@@ -81,9 +72,9 @@ services:
     container_name: discount.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234"
+      - "DatabaseSettings:ConnectionString=Server=postgresDb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234"
     depends_on:
-      - discountdb
+      - postgresDb
     ports:
       - "8002:80"
 
@@ -91,9 +82,9 @@ services:
     container_name: discount.grpc
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234"
+      - "DatabaseSettings:ConnectionString=Server=postgresDb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234"
     depends_on:
-      - discountdb
+      - postgresDb
     ports:
       - "8003:80"
 
@@ -101,10 +92,10 @@ services:
     container_name: ordering.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=2163osonivr7474rR;"
+      - "DatabaseSettings:ConnectionString=Server=postgresDb;Port=5433;Database=OrderDb;User Id=admin;Password=admin1234"
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
-      - orderdb
+      - postgresDb
       - rabbitmq
     ports:
       - "8004:80"

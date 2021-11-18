@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +26,7 @@ namespace Ordering.API.Extensions
                 logger.LogInformation("Migration ended with context {Context}", typeof(TContext));
 
             }
-            catch (SqlException e)
+            catch (Exception e)
             {
                 logger.LogError(e, "Error occurred while migrating the database on context {Context}", typeof(TContext));
                 if (retryForAvailability < 50)
