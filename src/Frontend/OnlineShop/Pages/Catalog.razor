@@ -1,60 +1,88 @@
 @page "/catalog"
 @using OnlineShop.Application.Catalog
 @using OnlineShop.Application.Basket
-@inject CatalogService CatalogService;
 @inject BasketService BasketService;
 
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject CatalogService CatalogService;
+
 <h3>Catalog</h3>
-@foreach (var product in _products)
+@if (_getCatalogError)
 {
-    <div class="card">
-        <div class="card__body">
-            <div class="half">
-                <div class="featured_text">
-                    <h1>@product.Name</h1>
-                    <p class="sub">@product.Category</p>
-                    <p class="price">$@product.Price</p>
+    <h1>Ошибка при загрузке каталога</h1>
+}
+else
+{
+    if (_catalog != null)
+    {
+        @foreach (var product in _catalog.Products!)
+        {
+            <div class="card">
+                <div class="card__body">
+                    <div class="half">
+                        <div class="featured_text">
+                            <h1>@product.Name</h1>
+                            <p class="sub">@product.Category</p>
+                            <p class="price">$@product.Price</p>
+                        </div>
+                        <div class="image">
+                            <img src="https://images-na.ssl-images-amazon.com/images/I/613A7vcgJ4L._SL1500_.jpg" alt="">
+                        </div>
+                    </div>
+                    <div class="half">
+                        <div class="description">
+                            <p>@product.Description</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="image">
-                    <img src="https://images-na.ssl-images-amazon.com/images/I/613A7vcgJ4L._SL1500_.jpg" alt="">
+                <div class="card__footer">
+                    <div class="recommend">
+                        <p>@product.Summary</p>
+                    </div>
+                    <div class="action">
+                        <button type="button" @onclick="() => AddToBasketAsync(product)">Добавить в корзину</button>
+                    </div>
                 </div>
             </div>
-            <div class="half">
-                <div class="description">
-                    <p>@product.Description</p>
-                </div>
-            </div>
-        </div>
-        <div class="card__footer">
-            <div class="recommend">
-                <p>@product.Summary</p>
-            </div>
-            <div class="action">
-                <button type="button" @onclick="() => AddToBasketAsync(product)">Добавить в корзину</button>
-            </div>
-        </div>
-    </div>
+        }
+    }
 }
 
 
+
 @code {
-    private Product[]? _products;
+    private CatalogModel? _catalog;
+    private bool _getCatalogError;
+    private bool _shouldRender;
+
+    protected override bool ShouldRender() => _shouldRender;
 
     protected override async Task OnInitializedAsync()
     {
-        _products = await CatalogService.GetCatalog();
+        var catalog = await CatalogService.GetCatalogAsync();
+        if (catalog?.Products == null)
+        {
+            _getCatalogError = true;
+        }
+        _catalog = catalog;
+        _shouldRender = true;
     }
 
     private async Task AddToBasketAsync(Product product)
     {
-        Console.WriteLine(product.Category);
-        await BasketService.AddToBasketAsync(new ShoppingCartItem
+        var cartResult = await ProtectedLocalStorage.GetAsync<ShoppingCart>("cart");
+        var cart = cartResult.Value ?? new ShoppingCart {Items = new List<ShoppingCartItem>()};
+        cart.UserName = "mail@mail.ru";
+        cart.Items!.Add(new ShoppingCartItem
         {
             Price = product.Price,
             Quantity = 1,
             ProductId = product.Id,
-            ProductName = product.Name,
+            ProductName = product.Name
         });
+        var updatedCart = await BasketService.UpdateBasketAsync(cart);
+        await ProtectedLocalStorage.SetAsync("cart", updatedCart ?? cart);
     }
 
 }

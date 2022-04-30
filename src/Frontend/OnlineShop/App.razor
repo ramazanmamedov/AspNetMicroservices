@@ -1,4 +1,9 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OnlineShop.Application.Basket
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject BasketService BasketService;
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
@@ -10,3 +15,12 @@
         </LayoutView>
     </NotFound>
 </Router>
+@code{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var cart = await BasketService.GetBasketAsync("mail@mail.ru");
+        await ProtectedLocalStore.SetAsync("cart", cart);
+    }
+
+}

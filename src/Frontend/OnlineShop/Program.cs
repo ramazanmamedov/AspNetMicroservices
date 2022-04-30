@@ -13,6 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<CatalogService>();
 builder.Services.AddSingleton<BasketService>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

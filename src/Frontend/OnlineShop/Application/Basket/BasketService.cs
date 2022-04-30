@@ -1,19 +1,45 @@
+using System.Text;
+using System.Text.Json;
+
 namespace OnlineShop.Application.Basket;
 
 public class BasketService
 {
-    private ShoppingCart? _cart;
-    public async Task AddToBasketAsync(ShoppingCartItem item)
+    private readonly IHttpClientFactory _clientFactory;
+
+    public BasketService(IHttpClientFactory clientFactory)
     {
-        if (_cart == null)
-        {
-            _cart = new ShoppingCart();
-        }
-        _cart.Items.Add(item);
+        _clientFactory = clientFactory;
     }
 
-    public ShoppingCart GetBasket()
+    public async Task<ShoppingCart?> UpdateBasketAsync(ShoppingCart cart)
     {
-        return _cart!;
+        var request = new HttpRequestMessage(HttpMethod.Post, new Uri("http://localhost:8010/Basket"));
+        request.Headers.Add("Accept", "application/json; charset=utf-8");
+        var json = JsonSerializer.Serialize(cart);
+        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        var httpClient = _clientFactory.CreateClient();
+        var response = await httpClient.SendAsync(request);
+        
+        if (!response.IsSuccessStatusCode) return new ShoppingCart();
+        
+        var result = await response.Content.ReadFromJsonAsync<ShoppingCart>();
+        return result;
+
+    }
+
+    public async Task<ShoppingCart?> GetBasketAsync(string userName)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:8010/Basket/{userName}"));
+        request.Headers.Add("Accept", "application/json; charset=utf-8");
+
+        var httpClient = _clientFactory.CreateClient();
+        var response = await httpClient.SendAsync(request);
+        
+        if (!response.IsSuccessStatusCode) return new ShoppingCart();
+        
+        var result = await response.Content.ReadFromJsonAsync<ShoppingCart>();
+        return result;
     }
 }

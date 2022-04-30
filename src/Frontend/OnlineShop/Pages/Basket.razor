@@ -1,58 +1,92 @@
 @page "/basket"
 @using OnlineShop.Application.Basket
 @inject BasketService BasketService;
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage ProtectedLocalStorage
+
 <div class="wrap cf">
     <h1 class="projTitle">Корзина</h1>
     <div class="heading cf">
         <a href="/catalog" class="continue">Продолжить покупки</a>
     </div>
-    @if (_shoppingCart != null)
-    {
-        <div class="cart">
-            @foreach (var item in _shoppingCart.Items)
-            {
-                <ul class="cartWrap">
-                    <li class="items odd">
-                        <div class="infoWrap">
-                            <div class="cartSection">
-                                <img src="http://lorempixel.com/output/technics-q-c-300-300-4.jpg" alt="" class="itemImg"/>
-                                <p class="itemNumber"></p>
-                                <h3>@item.ProductName</h3>
-                                <p class="stockStatus"> In Stock</p>
-                            </div>
-                            <div class="prodTotal cartSection">
-                                <p>@item.Price</p>
-                            </div>
-                            <div class="cartSection removeWrap">
-                                <a href="#" class="remove">x</a>
-                            </div>
-                        </div>
-                    </li>
 
-                </ul>
-            }
-        </div>
-        <div class="subtotal cf">
-            <p class="totalRow final">
-                <span class="label">Сумма</span><span class="value"> @_shoppingCart.Total</span>
-            </p>
-            <p class="totalRow">
-                <a href="#" class="btn continue">Оформить заказ</a>
-            </p>
-        </div>
+    @if (_getBasketError)
+    {
+        <h1>Ошибка при загрузке корзины</h1>
     }
     else
     {
-        <h3 class="heading"> Корзина пуста </h3>
+        @if (_shoppingCart != null && _shoppingCart!.Items?.Count != 0)
+        {
+            <div class="cart">
+                @foreach (var item in _shoppingCart.Items)
+                {
+                    <ul class="cartWrap">
+                        <li class="items odd">
+                            <div class="infoWrap">
+                                <div class="cartSection">
+                                    <img src="http://lorempixel.com/output/technics-q-c-300-300-4.jpg" alt="" class="itemImg"/>
+                                    <p class="itemNumber"></p>
+                                    <h3>@item.ProductName</h3>
+                                    <p class="stockStatus"> In Stock</p>
+                                </div>
+                                <div class="prodTotal cartSection">
+                                    <p>@item.Price</p>
+                                </div>
+                                <div class="cartSection removeWrap">
+                                    <a @onclick="() => RemoveCartItem(item.ProductId!)" class="remove">x</a>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                }
+            </div>
+            <div class="subtotal cf">
+                <p class="totalRow final">
+                    <span class="label">Сумма</span><span class="value"> @_shoppingCart.TotalPrice</span>
+                </p>
+                <p class="totalRow">
+                    <a href="#" class="btn continue">Оформить заказ</a>
+                </p>
+            </div>
+        }
+        else
+        {
+            <h3 class="heading"> Корзина пуста </h3>
+        }
     }
+    
+    
 </div>
 
 @code {
     private ShoppingCart? _shoppingCart;
+    private bool _getBasketError;
+    private bool _shouldRender;
 
-    protected override void OnInitialized()
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override async Task OnInitializedAsync()
     {
-        _shoppingCart = BasketService.GetBasket();
+        var cart = await BasketService.GetBasketAsync("mail@mail.ru");
+        if (cart == null)
+            _getBasketError = true;
+
+        _shouldRender = true;
+        _shoppingCart = cart;
+    }
+
+    private async Task RemoveCartItem(string productId)
+    {
+        var product = _shoppingCart!.Items!.FirstOrDefault(c => c.ProductId == productId)!;
+        _shoppingCart!.Items!.Remove(product);
+        var updated =  await BasketService.UpdateBasketAsync(_shoppingCart);
+        if (updated != null)
+            _shoppingCart = updated;
+        
+        await ProtectedLocalStorage.SetAsync("cart", _shoppingCart);
     }
 
 }
