@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
 using Discount.Grpc.Protos;
@@ -29,6 +30,7 @@ namespace Basket.API
             {
                 options.Configuration = Configuration.GetValue<string>("CacheSettings:ConnectionString");
             });
+            
             
             // General Configuration
             services.AddScoped<IBasketRepository, BasketRepository>();
