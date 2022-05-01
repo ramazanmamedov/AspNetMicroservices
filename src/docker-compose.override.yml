@@ -117,6 +117,18 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8007:80"
+  
+  client.app:
+    container_name: client.app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "HttpConfig:OcelotUrl=http://ocelotapigw/"
+      - "HttpConfig:AuthUrl=http://identity.api/api/v1/"
+    ports:
+      - "8009:80"
+    depends_on:
+      - ocelotapigw
+      - identity.api
     
   ocelotapigw:
     container_name: ocelotapigw

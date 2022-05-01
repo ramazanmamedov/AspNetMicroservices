@@ -54,6 +54,12 @@ services:
     build:
       context: .
       dockerfile: Services/Identity/Identity.API/Dockerfile
+      
+  client.app:
+    image: ${DOCKER_REGISTRY-}clientappp
+    build:
+      context: .
+      dockerfile: Frontend/OnlineShop/Dockerfile
   
   ocelotapigw:
     image: ${DOCKER_REGISTRY-}ocelotapigw
