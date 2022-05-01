@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using OnlineShop.Services.Identity
+@inherits LayoutComponentBase
+
+@inject NavigationManager NavigationManager
+@inject IdentityAuthenticationStateProvider AuthStateProvider
 
 <PageTitle>OnlineShop</PageTitle>
 
@@ -8,12 +12,30 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
+        <AuthorizeView>
+            <Authorized>
+                <div class="top-row px-4">
+                    <button type="button" class="btn btn-link ml-md-auto" @onclick="@LogoutClick">Выйти</button>
+                </div>
+            </Authorized>
+            
+            <NotAuthorized>
+                <div class="top-row px-4">
+                    <a class="btn btn-link ml-md-auto" href="login">Войти</a>
+                    <a class="btn btn-link ml-md-auto" href="register">Зарегистрироваться</a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+       <article class="content px-4">
+           @Body
+       </article>
     </main>
 </div>
+@code{
+
+    async Task LogoutClick()
+    {
+        await AuthStateProvider.Logout();
+        NavigationManager.NavigateTo("/login");
+    }
+}

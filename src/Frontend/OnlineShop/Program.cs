@@ -1,16 +1,17 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using OnlineShop.Application.Basket;
-using OnlineShop.Application.Catalog;
-using OnlineShop.Data;
-using OnlineShop.Pages;
+using Microsoft.AspNetCore.Components.Authorization;
+using OnlineShop.Services.Basket;
+using OnlineShop.Services.Catalog;
+using OnlineShop.Services.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<IdentityAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<IdentityAuthenticationStateProvider>());
+builder.Services.AddScoped<IAuthorizeApi, AuthorizeApi>();
 builder.Services.AddSingleton<CatalogService>();
 builder.Services.AddSingleton<BasketService>();
 builder.Services.AddHttpClient();

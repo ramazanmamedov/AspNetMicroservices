@@ -7,4 +7,7 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\BuildingBlocks\Identity.Common\Identity.Common.csproj" />
+    </ItemGroup>
 </Project>

@@ -1,0 +1,54 @@
+@page "/login"
+@using OnlineShop.Services.Identity
+@using Microsoft.AspNetCore.Components
+@using Identity.Common
+@layout MainLayout
+@inject NavigationManager NavigationManager
+@inject IdentityAuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Вход</PageTitle>
+
+<EditForm class="form-signin" OnValidSubmit="OnSubmit" Model="LoginParameters">
+    <DataAnnotationsValidator />
+    <h4 class="font-weight-normal text-center">Войти</h4>
+
+    <label for="inputUsername" class="sr-only">Email</label>
+    <InputText id="inputUsername" class="form-control" @bind-Value="LoginParameters.UserName" autofocus placeholder="Email"/>
+    <ValidationMessage For="@(() => LoginParameters.UserName)" />
+
+    <label for="inputPassword" class="sr-only">Пароль</label>
+    <InputText type="password" id="inputPassword" class="form-control" placeholder="Пароль" @bind-Value="LoginParameters.Password" />
+    <ValidationMessage For="@(() => LoginParameters.Password)" />
+
+    <div class="form-check m-3">
+        <InputCheckbox id="inputRememberMe" class="form-check-input" @bind-Value="@LoginParameters.RememberMe" />
+        <label class="form-check-label" for="inputRememberMe">Запомнить меня</label>
+    </div>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+
+    <label class="text-danger">@Error</label>
+
+    <NavLink href="register">
+        <h6 class="font-weight-normal text-center">Создать аккаунт</h6>
+    </NavLink>
+</EditForm>
+
+@code{
+    LoginParameters LoginParameters { get; set; } = new LoginParameters();
+    string Error { get; set; }
+
+    async Task OnSubmit()
+    {
+        Error = null;
+        try
+        {
+            await AuthStateProvider.Login(LoginParameters);
+            NavigationManager.NavigateTo("");
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+    }
+}

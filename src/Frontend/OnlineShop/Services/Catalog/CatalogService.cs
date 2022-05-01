@@ -1,6 +1,4 @@
-using System.Text.Json;
-
-namespace OnlineShop.Application.Catalog;
+namespace OnlineShop.Services.Catalog;
 
 public class CatalogService
 {

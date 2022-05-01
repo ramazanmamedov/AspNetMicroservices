@@ -1,4 +1,4 @@
-namespace OnlineShop.Application.Catalog;
+namespace OnlineShop.Services.Catalog;
 
 public class CatalogModel
 {

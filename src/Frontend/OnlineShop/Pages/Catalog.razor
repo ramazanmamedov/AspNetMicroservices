@@ -1,13 +1,12 @@
 @page "/catalog"
-@using OnlineShop.Application.Catalog
-@using OnlineShop.Application.Basket
 @inject BasketService BasketService;
 
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OnlineShop.Services.Basket
+@using OnlineShop.Services.Catalog
 @inject ProtectedLocalStorage ProtectedLocalStorage
 @inject CatalogService CatalogService;
 
-<h3>Catalog</h3>
 @if (_getCatalogError)
 {
     <h1>Ошибка при загрузке каталога</h1>
@@ -40,16 +39,18 @@ else
                     <div class="recommend">
                         <p>@product.Summary</p>
                     </div>
-                    <div class="action">
-                        <button type="button" @onclick="() => AddToBasketAsync(product)">Добавить в корзину</button>
-                    </div>
+                    <AuthorizeView>
+                        <Authorized>
+                            <div class="action">
+                                <button type="button" @onclick="() => AddToBasketAsync(product)">Добавить в корзину</button>
+                            </div>
+                        </Authorized>
+                    </AuthorizeView>
                 </div>
             </div>
         }
     }
 }
-
-
 
 @code {
     private CatalogModel? _catalog;
@@ -74,15 +75,23 @@ else
         var cartResult = await ProtectedLocalStorage.GetAsync<ShoppingCart>("cart");
         var cart = cartResult.Value ?? new ShoppingCart {Items = new List<ShoppingCartItem>()};
         cart.UserName = "mail@mail.ru";
-        cart.Items!.Add(new ShoppingCartItem
+        if (cart.Items!.Exists(c => c.ProductId == product.Id))
         {
-            Price = product.Price,
-            Quantity = 1,
-            ProductId = product.Id,
-            ProductName = product.Name
-        });
+            cart.Items.FirstOrDefault(c => c.ProductId == product.Id)!.Quantity++;
+        }
+        else
+        {
+            cart.Items!.Add(new ShoppingCartItem
+            {
+                Price = product.Price,
+                Quantity = 1,
+                ProductId = product.Id,
+                ProductName = product.Name
+            });
+        }
         var updatedCart = await BasketService.UpdateBasketAsync(cart);
         await ProtectedLocalStorage.SetAsync("cart", updatedCart ?? cart);
+        product.IsInBasket = true;
     }
 
 }

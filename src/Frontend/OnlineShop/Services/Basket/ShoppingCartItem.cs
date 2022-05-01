@@ -1,4 +1,4 @@
-namespace OnlineShop.Application.Basket;
+namespace OnlineShop.Services.Basket;
 
 public class ShoppingCartItem
 {

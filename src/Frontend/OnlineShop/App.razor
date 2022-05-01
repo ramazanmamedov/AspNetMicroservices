@@ -1,26 +1,31 @@
 ﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using OnlineShop.Application.Basket
+@using OnlineShop.Services.Basket
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject BasketService BasketService;
 
-<Router AppAssembly="@typeof(App).Assembly">
+<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                Authorizing...
+            </Authorizing>
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+        </AuthorizeRouteView>
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        <CascadingAuthenticationState>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p>Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </CascadingAuthenticationState>
     </NotFound>
 </Router>
 @code{
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var cart = await BasketService.GetBasketAsync("mail@mail.ru");
         await ProtectedLocalStore.SetAsync("cart", cart);
     }
-
 }

@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">OnlineShop</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -15,26 +17,26 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
             <NavLink class="nav-link" href="catalog">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Catalog
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Каталог
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="basket">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Basket
-            </NavLink>
+            <AuthorizeView>
+                <Authorized>
+                    <NavLink class="nav-link" href="basket">
+                        <span class="oi oi-basket" aria-hidden="true"></span> Корзина
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+            
         </div>
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
-
+    
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace OnlineShop.Application.Basket;
+namespace OnlineShop.Services.Basket;
 
 public class BasketService
 {

@@ -1,9 +1,10 @@
 @page "/basket"
-@using OnlineShop.Application.Basket
 @inject BasketService BasketService;
 
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OnlineShop.Services.Basket
 @inject ProtectedLocalStorage ProtectedLocalStorage
+@attribute [Authorize]
 
 <div class="wrap cf">
     <h1 class="projTitle">Корзина</h1>
@@ -29,10 +30,10 @@
                                     <img src="http://lorempixel.com/output/technics-q-c-300-300-4.jpg" alt="" class="itemImg"/>
                                     <p class="itemNumber"></p>
                                     <h3>@item.ProductName</h3>
-                                    <p class="stockStatus"> In Stock</p>
+                                    <p class="stockStatus">В наличии</p>
                                 </div>
                                 <div class="prodTotal cartSection">
-                                    <p>@item.Price</p>
+                                    <p>@item.Price x @item.Quantity</p> 
                                 </div>
                                 <div class="cartSection removeWrap">
                                     <a @onclick="() => RemoveCartItem(item.ProductId!)" class="remove">x</a>
