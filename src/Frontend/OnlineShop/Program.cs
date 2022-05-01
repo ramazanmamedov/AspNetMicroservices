@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using OnlineShop.Services.Basket;
 using OnlineShop.Services.Catalog;
 using OnlineShop.Services.Identity;
+using OnlineShop.Services.Ordering;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,20 @@ builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredServic
 builder.Services.AddScoped<IAuthorizeApi, AuthorizeApi>();
 builder.Services.AddSingleton<CatalogService>();
 builder.Services.AddSingleton<BasketService>();
-builder.Services.AddHttpClient();
+builder.Services.AddSingleton<OrderService>();
+
+
+builder.Services.AddHttpClient("Ocelot", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["HttpConfig:OcelotUrl"]);
+    client.DefaultRequestHeaders.Add("Accept", "application/json; charset=utf-8");
+});
+
+builder.Services.AddHttpClient("Auth", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["HttpConfig:AuthUrl"]);
+    client.DefaultRequestHeaders.Add("Accept", "application/json; charset=utf-8");
+});
 
 var app = builder.Build();
 

@@ -22,7 +22,7 @@ namespace Ordering.Infrastructure.Persistance
         {
             return new List<Order>
             {
-                new() {UserName = "rmz", FirstName = "Ramazan", LastName = "Mamedov", EmailAddress = "mamedov.r9657@gmail.com", AddressLine = "Almaty", Country = "Kazakhstan", TotalPrice = 6000 }
+                new() {UserName = "rmz",  TotalPrice = 6000 }
             };
         }
     }

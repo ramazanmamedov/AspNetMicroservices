@@ -2,23 +2,17 @@ namespace OnlineShop.Services.Catalog;
 
 public class CatalogService
 {
-    private readonly IHttpClientFactory _clientFactory;
+    private readonly HttpClient _httpClient;
 
     public CatalogService(IHttpClientFactory clientFactory)
     {
-        _clientFactory = clientFactory;
+        _httpClient = clientFactory.CreateClient("Ocelot");
     }
 
     public async Task<CatalogModel?> GetCatalogAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost:8010/Catalog"));
-        request.Headers.Add("Accept", "application/json; charset=utf-8");
-
-        var httpClient = _clientFactory.CreateClient();
-        var response = await httpClient.SendAsync(request);
-
+        var response = await _httpClient.GetAsync("Catalog");
         if (!response.IsSuccessStatusCode) return new CatalogModel();
-        
         var products = await response.Content.ReadFromJsonAsync<Product[]>();
         return new CatalogModel {Products = products};
     }

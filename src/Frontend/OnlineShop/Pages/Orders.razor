@@ -1,0 +1,69 @@
+@page "/orders"
+@using OnlineShop.Services.Ordering
+@inject OrderService OrdersService
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+<div class="wrap cf">
+    <h1 class="projTitle">История заказов</h1>
+    <div class="heading cf">
+        <a href="/catalog" class="continue">Продолжить покупки</a>
+    </div>
+
+    @if (_error)
+    {
+        <h1>Ошибка при загрузке заказов</h1>
+    }
+    else
+    {
+        @if ( _orderModel != null && _orderModel?.Items?.Count != 0)
+        {
+            <div class="cart">
+                @foreach (var item in _orderModel!.Items!)
+                {
+                    <ul class="cartWrap">
+                        <li class="items odd">
+                            <div class="infoWrap">
+                                <div class="cartSection">
+                                    <img src="http://lorempixel.com/output/technics-q-c-300-300-4.jpg" alt="" class="itemImg"/>
+                                    <p class="itemNumber">#@item.Id</p>
+                                    <p class="stockStatus">Оплачен</p>
+                                </div>
+                                <div class="prodTotal cartSection">
+                                    <p>$@item.TotalPrice</p> 
+                                </div>
+                                 <div class="prodTotal cartSection">
+                                    <p>@item.UserName</p> 
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                }
+            </div>
+        }
+        else
+        {
+            <h3 class="heading"> У вас нет заказов </h3>
+        }
+    }
+    
+    
+</div>
+@code {
+    private bool _error;
+    private bool _shouldRender;
+    private OrderModel? _orderModel;
+    
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (user.User.Identity is {IsAuthenticated: true })
+        {
+            var orderItems = await OrdersService.GetOrdersAsync(user.User.Identity.Name!);
+            _orderModel = new OrderModel{Items = orderItems};
+            _shouldRender = true;
+            _error = false;
+        }
+    }
+}

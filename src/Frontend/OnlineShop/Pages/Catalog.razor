@@ -1,11 +1,9 @@
 @page "/catalog"
 @inject BasketService BasketService;
-
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using OnlineShop.Services.Basket
 @using OnlineShop.Services.Catalog
-@inject ProtectedLocalStorage ProtectedLocalStorage
 @inject CatalogService CatalogService;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
 @if (_getCatalogError)
 {
@@ -72,26 +70,28 @@ else
 
     private async Task AddToBasketAsync(Product product)
     {
-        var cartResult = await ProtectedLocalStorage.GetAsync<ShoppingCart>("cart");
-        var cart = cartResult.Value ?? new ShoppingCart {Items = new List<ShoppingCartItem>()};
-        cart.UserName = "mail@mail.ru";
-        if (cart.Items!.Exists(c => c.ProductId == product.Id))
+        var user = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (user.User.Identity is {IsAuthenticated: true })
         {
-            cart.Items.FirstOrDefault(c => c.ProductId == product.Id)!.Quantity++;
-        }
-        else
-        {
-            cart.Items!.Add(new ShoppingCartItem
+            var cartResult = await BasketService.GetBasketAsync(user.User.Identity.Name);
+            if (cartResult == null)
             {
-                Price = product.Price,
-                Quantity = 1,
-                ProductId = product.Id,
-                ProductName = product.Name
-            });
+                return;
+            }
+            if (cartResult.Items!.Exists(c => c.ProductId == product.Id))
+                cartResult.Items.FirstOrDefault(c => c.ProductId == product.Id)!.Quantity++;
+            else
+            {
+                cartResult.Items!.Add(new ShoppingCartItem
+                {
+                    Price = product.Price,
+                    Quantity = 1,
+                    ProductId = product.Id,
+                    ProductName = product.Name
+                });
+            }
+            await BasketService.UpdateBasketAsync(cartResult);
         }
-        var updatedCart = await BasketService.UpdateBasketAsync(cart);
-        await ProtectedLocalStorage.SetAsync("cart", updatedCart ?? cart);
-        product.IsInBasket = true;
     }
 
 }

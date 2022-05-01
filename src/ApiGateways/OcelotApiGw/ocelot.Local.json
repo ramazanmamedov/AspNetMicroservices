@@ -1,5 +1,18 @@
 ﻿{
   "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/v1/Authorize/UserInfo",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port" : "8007"
+        }
+      ],
+      "UpstreamPathTemplate": "/Authorize/UserInfo",
+      "UpstreamHttpMethod": ["GET"]
+    },
+    
     //CatalogAPI
     {
       "DownstreamPathTemplate": "/api/v1/Catalog",
