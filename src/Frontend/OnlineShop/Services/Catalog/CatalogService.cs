@@ -16,4 +16,12 @@ public class CatalogService
         var products = await response.Content.ReadFromJsonAsync<Product[]>();
         return new CatalogModel {Products = products};
     }
+    
+    public async Task<CatalogModel?> GetProductsByCategoryAsync(string category)
+    {
+        var response = await _httpClient.GetAsync($"Catalog/GetProductsByCategory/{category}");
+        if (!response.IsSuccessStatusCode) return new CatalogModel();
+        var products = await response.Content.ReadFromJsonAsync<Product[]>();
+        return new CatalogModel {Products = products};
+    }
 }

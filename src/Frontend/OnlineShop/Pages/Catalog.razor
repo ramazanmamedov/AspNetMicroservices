@@ -11,6 +11,45 @@
 }
 else
 {
+    <div class="section over-hide z-bigger">
+        <div class="section over-hide z-bigger">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 pt-5">
+                        <p class="mb-4 pb-2">Категории</p>
+                    </div>
+                    <div class="col-12">
+                        <input class="checkbox-tools" type="radio" @onclick="GetCatalog" name="tools" id="tool-5" checked>
+                        <label class="for-checkbox-tools" for="tool-5">
+                            <i class='uil uil-brush-alt'></i>
+                            Все
+                        </label>
+                        <input class="checkbox-tools" type="radio" name="tools" @onclick='() => GetByCategory("Smart Phone")' id="tool-1">
+                        <label class="for-checkbox-tools" for="tool-1">
+                            <i class='uil uil-line-alt'></i>
+                            Смартфоны
+                        </label><!--
+                        --><input class="checkbox-tools" type="radio" name="tools" @onclick='() => GetByCategory("Notebook")' id="tool-2">
+                        <label class="for-checkbox-tools" for="tool-2">
+                            <i class='uil uil-vector-square'></i>
+                            Ноутбуки
+                        </label><!--
+                        --><input class="checkbox-tools" type="radio" name="tools" @onclick='() => GetByCategory("Computer")' id="tool-3">
+                        <label class="for-checkbox-tools" for="tool-3">
+                            <i class='uil uil-ruler'></i>
+                            Компьютеры
+                        </label><!--
+                        --><input class="checkbox-tools" type="radio" name="tools" @onclick='() => GetByCategory("Other")' id="tool-4">
+                        <label class="for-checkbox-tools" for="tool-4">
+                            <i class='uil uil-crop-alt'></i>
+                            Периферия
+                        </label>
+                    </div>
+                </div>	
+            </div>
+        </div>
+    </div>
+
     if (_catalog != null)
     {
         @foreach (var product in _catalog.Products!)
@@ -24,7 +63,7 @@ else
                             <p class="price">$@product.Price</p>
                         </div>
                         <div class="image">
-                            <img src="https://images-na.ssl-images-amazon.com/images/I/613A7vcgJ4L._SL1500_.jpg" alt="">
+                            <img src="@product.ImageFile" alt="">
                         </div>
                     </div>
                     <div class="half">
@@ -66,6 +105,22 @@ else
         }
         _catalog = catalog;
         _shouldRender = true;
+    }
+
+    private async Task GetCatalog()
+    {
+        var catalog = await CatalogService.GetCatalogAsync();
+        if (catalog?.Products == null)
+        {
+            _getCatalogError = true;
+        }
+        _catalog = catalog;
+        _shouldRender = true;
+    }
+
+    private async Task GetByCategory(string category)
+    {
+        _catalog = await CatalogService.GetProductsByCategoryAsync(category);
     }
 
     private async Task AddToBasketAsync(Product product)
