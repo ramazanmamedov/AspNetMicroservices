@@ -2,7 +2,7 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
             <Authorizing>
-                Authorizing...
+                Авторизация...
             </Authorizing>
             <NotAuthorized>
                 <RedirectToLogin />
@@ -12,7 +12,7 @@
     <NotFound>
         <CascadingAuthenticationState>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p>Sorry, there's nothing at this address.</p>
+                <p>Страницы не существует</p>
             </LayoutView>
         </CascadingAuthenticationState>
     </NotFound>
