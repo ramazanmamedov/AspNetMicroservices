@@ -41,6 +41,18 @@ services:
       - "5431:5432"
     volumes:
       - postgres_data:/var/lib/postgressql/data
+  
+  identitydb:
+    container_name: identitydb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=IdentityDb
+    restart: always
+    ports:
+      - "5430:5432"
+    volumes:
+      - postgres_data:/var/lib/postgressql/data
 
   basketdb:
     container_name: basketdb
@@ -114,9 +126,13 @@ services:
   identity.api:
     container_name: identity.api
     environment:
+      - "ConnectionStrings:IdentityConnectionString=Server=identitydb;Port=5432;Database=IdentityDb;User Id=admin;Password=admin1234"
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8007:80"
+    depends_on:
+      - identitydb
+      - rabbitmq
   
   client.app:
     container_name: client.app

@@ -18,6 +18,9 @@ services:
 
   orderdb:
     image: postgres
+  
+  identitydb:
+    image: postgres
     
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
