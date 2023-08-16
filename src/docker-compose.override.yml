@@ -5,7 +5,7 @@ services:
     container_name: portainer
     restart: always
     ports:
-      - "8090:8000"
+      - "1090:8000"
       - "9000:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
